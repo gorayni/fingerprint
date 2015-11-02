@@ -1,0 +1,67 @@
+\documentclass[tikz,convert=false]{standalone}
+
+\usepackage{tikz}
+\usepackage{verbatim}
+\usepackage[active,tightpage]{preview}
+\usetikzlibrary{decorations.pathreplacing}
+
+\SetSymbolFont{letters}{bold}{OML}{cmbr}{bx}{it}
+\renewcommand{\familydefault}{\sfdefault}
+
+
+\usepackage{xparse}% http://ctan.org/pkg/xparse
+\usepackage{etoolbox}% http://ctan.org/pkg/etoolbox
+\newcounter{listtotal}\newcounter{listcntr}%
+\NewDocumentCommand{\events}{o}{%
+  \setcounter{listtotal}{0}\setcounter{listcntr}{-1}%
+  \renewcommand*{\do}[1]{\stepcounter{listtotal}}%
+  \expandafter\docsvlist\expandafter{\namesarray}%
+  \IfNoValueTF{#1}
+    {\namesarray}% \names
+    {% \names[<index>]
+     \renewcommand*{\do}[1]{\stepcounter{listcntr}\ifnum\value{listcntr}=#1\relax##1\fi}%
+     \expandafter\docsvlist\expandafter{\namesarray}}%
+}
+
+\usetikzlibrary{positioning, decorations.markings}
+
+\begin{document}
+
+\begin{tikzpicture}
+[invisible/.style={circle,draw=none,fill=none,inner sep=0pt,minimum size=0mm,line width=0mm}]
+
+\newcommand{\namesarray}{Hebb Rule,Perceptron,Adaline,Minsky and Papert criticism,Paul Werbos found backpropagation,Neocognitron,Backpropagation,LeNet5,First \textit{``Deep''} learning algorithm,ReLU (AlexNet),MaxOut}
+
+
+
+\def\years{{1949,1957,1960,1969,1974,1980,1986,1998,2006,2012,2013}}
+\def \startYear{1949}
+\def \endYear{2016}
+
+\def \factor{0.32}
+\def \horizontalOffset{0}
+\def \verticalOffset{-0.5}
+
+
+% Drawing Main Line
+\pgfmathsetmacro\xEnd{(\endYear-\startYear)*\factor+\horizontalOffset}
+\draw ({\horizontalOffset},{0}) -- ({\xEnd},{0});
+
+\node[invisible] at ({\horizontalOffset},-1.25) {};
+
+\def \numYears {10}
+% Drawing years
+\foreach \i in {0,...,\numYears} {
+	\pgfmathparse{\years[\i]} \let\year\pgfmathresult			
+        \pgfmathsetmacro\x{(\year-\startYear)*\factor+\horizontalOffset}
+        \pgfmathsetmacro\y{\verticalOffset}
+        \node[rotate=90,invisible] at ({\x},{\y-0.2}) {\textbf{\year}};
+	\node[invisible] (\i) at ({\x},{\y+0.85}) {};
+	\node [rotate=45,right=0cm of \i,draw=white,fill=none,inner sep=0pt,minimum size=0mm,line width=0mm] {\events[\i]};
+        \draw (\x,0.15) -- (\x,-0.15);
+}
+
+\end{tikzpicture}
+
+
+\end{document}
